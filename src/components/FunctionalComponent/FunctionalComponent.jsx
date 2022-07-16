@@ -31,7 +31,9 @@ export const FunctionalComponent = ({min, max}) => {
     // из предыдущего в следующий setCount;
 
     // А таким образом мы обеспечим последовательную передачу
-    // значений = суммируем все значения count
+    // значений = суммируем все значения count - благодаря batching и
+    // асинхронности значения count за 1 render будем единым - будет равно
+    // сумме всех вызовов-ретернов setCount
     setCount(prevCount => prevCount + 1);
     setCount(prevCount => prevCount + 1);
     setCount(prevCount => prevCount + 1);
