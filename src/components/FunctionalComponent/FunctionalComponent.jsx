@@ -4,19 +4,27 @@ import PropTypes from 'prop-types';
 
 export const FunctionalComponent = ({min, max}) => {
   const [userNumberFromInput, setUserNumberFromInput] = useState('');
+  const [count, setCount] = useState(0);
   const [result, setResult] = useState('Результат');
   const [randomNumber] = useState(
     Math.floor(Math.random() * (max - min + 1)) + min
   );
-
-  console.log(userNumberFromInput, randomNumber);
+    // как и метод setState, useState и все use хуки- асинхронные
+    // React uses batching to group state updates within event handlers
+    // and inbuilt hooks. It prevents components from re-rendering
+    // for each state update and improves application performance.
+    // React 17, and prior versions only support batching for browser events.
+  console.log(userNumberFromInput, randomNumber, count);
 
   const handleSubmit = e => {
     e.preventDefault();
 
+    setCount(count + 1);
+    // 1) Получается в set... можно передать функцию () => {}
+    // которая вернет значение через return
+    // после того, как будет вызвана функция-обертка
     setResult(() => {
       if (!userNumberFromInput ||
-        userNumberFromInput === 0 ||
         userNumberFromInput < min ||
         userNumberFromInput > max) {
         return `Введите число от ${min} до ${max}`;
@@ -33,7 +41,7 @@ export const FunctionalComponent = ({min, max}) => {
       return `Вы угадали, загаданное число ${userNumberFromInput}`;
     });
   };
-
+  // 2) Получается в set... можно передать значение
   const handleChange = (e) => {
     setUserNumberFromInput(e.target.value);
   };
@@ -43,7 +51,7 @@ export const FunctionalComponent = ({min, max}) => {
       <p className={style.result}>{result}</p>
       <form className={style.form} onSubmit={handleSubmit}>
         <label className={style.label} htmlFor='user_number'>
-          Угадай число
+          Попыток {count}
         </label>
         <input
           className={style.input}
@@ -52,7 +60,9 @@ export const FunctionalComponent = ({min, max}) => {
           value={userNumberFromInput}
           onChange={handleChange}
         />
-        <button className={style.btn}>Угадать</button>
+        <button
+          className={style.btn}
+          disabled={!userNumberFromInput && true}>Угадать</button>
       </form>
     </div>
   );
