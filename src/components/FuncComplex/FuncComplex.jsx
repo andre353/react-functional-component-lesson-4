@@ -9,9 +9,9 @@ export const FuncComplex = ({min, max}) => {
   const [state, setState] = useState({
     userNumberFromInput: '',
     count: 0,
+    result: 'Результат',
   });
 
-  const [result, setResult] = useState('Результат');
   const [randomNumber] = useState(
     Math.floor(Math.random() * (max - min + 1)) + min
   );
@@ -21,28 +21,34 @@ export const FuncComplex = ({min, max}) => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    // устанавливаем значение count - старое значение перетирается новым
-    // а новое образуется суммированием со старым
-    setState((prevState) => ({...prevState, count: state.count + 1}));
+    // 1. новое значение count образуется суммированием со старым
+    // 2. значение count в старом объекте
+    // перетирается новым значением count - образуется новый объект
+    // setState((prevState) => ({...prevState, count: state.count + 1}));
 
-    setResult(() => {
+    setState((prevState) => {
+      let result = '';
+      let count = prevState.count;
       if (!state.userNumberFromInput ||
         state.userNumberFromInput < min ||
         state.userNumberFromInput > max) {
-        return `Введите число от ${min} до ${max}`;
+        return {...prevState, result: `Введите число от ${min} до ${max}`};
       }
 
+      count++;
       if (state.userNumberFromInput > randomNumber) {
-        return `${state.userNumberFromInput} больше загаданного числа`;
+        result = `${state.userNumberFromInput} больше загаданного числа`;
+      } else if (state.userNumberFromInput < randomNumber) {
+        result = `${state.userNumberFromInput} меньше загаданного числа`;
+      } else {
+        result = `Вы угадали, загаданное число ${state.userNumberFromInput}. 
+        Попыток ${count}`;
       }
 
-      if (state.userNumberFromInput < randomNumber) {
-        return `${state.userNumberFromInput} меньше загаданного числа`;
-      }
-
-      return `Вы угадали, загаданное число ${state.userNumberFromInput}. 
-      Попыток ${state.count}`; // ЗДЕСЬ БУДЕТ СТАРОЕ ЗНАЧЕНИЕ COUNT,
-      // Т.К. НОВОЕ из setState ЕЩЕ В STACK и не успело сюда попасть
+      // state будет обновлятся при каждом клике Угадать
+      // т.е. count++ стработает при одном клике только 1 раз
+      // и обновится в state:
+      return {...prevState, count, result};
     });
   };
   // получаем новое значение и каждый раз его перезаписываем
@@ -52,7 +58,7 @@ export const FuncComplex = ({min, max}) => {
 
   return (
     <div className={style.game}>
-      <p className={style.result}>{result}</p>
+      <p className={style.result}>{state.result}</p>
       <form className={style.form} onSubmit={handleSubmit}>
         <label className={style.label} htmlFor='user_number'>
           Попыток {state.count}
