@@ -14,7 +14,7 @@ export const FunctionalComponent = ({min, max}) => {
     // and inbuilt hooks. It prevents components from re-rendering
     // for each state update and improves application performance.
     // React 17, and prior versions only support batching for browser events.
-  console.log(userNumberFromInput, randomNumber, count);
+  // console.log(userNumberFromInput, randomNumber, count);
 
   const handleSubmit = e => {
     e.preventDefault();
