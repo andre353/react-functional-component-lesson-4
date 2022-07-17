@@ -15,7 +15,7 @@ export const FunctionalComponent = ({min, max}) => {
   //   setResult('Играем заново!');
   // };
   // колбэк вызывается каждый раз как угадано число
-  useEffect(() => {
+  useEffect(() => {// Перерендера страницы нет
     setRandomNumber(Math.floor(Math.random() * (max - min + 1)) + min);
     console.log('[showBtn] - основной компон', showBtn, randomNumber);
     // const timer = setTimeout(() => cleanState(), 1000);
@@ -24,7 +24,9 @@ export const FunctionalComponent = ({min, max}) => {
     // };
   }, [showBtn]); // запускается, когда showBtn становится false
 
-  // альтернатива cleanState
+  // useEffect() НИЧЕГО НЕ ВОЗВРАЩАЕТ - НЕ ЗАПИСАТЬ В ПЕРЕМЕННУЮ
+
+  // альтернатива cleanState - ПЕРЕРЕНДЕРА СТРАНИЦЫ НЕТ
   useEffect(() => {
     setShowBtn(true);
   }, [randomNumber]); // в свою очередь измененное randnumber изменит showBtn
