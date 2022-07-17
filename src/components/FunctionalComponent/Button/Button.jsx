@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 
 export const Button = ({text}) => {
   useEffect(() => {
-    console.log('[]useEffect - button'); // при вызове компон
+    console.log('[]useEffect - из Button'); // при вызове компон
     return () => {
-      console.log('CWU - button'); // перед демонтажем комп
+      console.log('CWU - из Button'); // перед демонтажем комп
     };
   }, []); // пустой массив обеспечивает разовый вызов обоих callbackов
   // но в разное время

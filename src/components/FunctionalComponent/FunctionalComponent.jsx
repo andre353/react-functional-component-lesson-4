@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import style from './FunctionalComponent.module.css';
 import PropTypes from 'prop-types';
 import {Button} from './Button/Button';
@@ -7,16 +7,22 @@ export const FunctionalComponent = ({min, max}) => {
   const [userNumberFromInput, setUserNumberFromInput] = useState('');
   const [count, setCount] = useState(0);
   const [result, setResult] = useState('Результат');
-  const [randomNumber] = useState(
-    Math.floor(Math.random() * (max - min + 1)) + min
-  );
-
+  const [randomNumber, setRandomNumber] = useState(0);
   const [showBtn, setShowBtn] = useState(true);
 
-  // колбэк вызывается каждый раз при внесении нового значения в input
-  // useEffect(() => {
-  //   console.log('[userNumberFromInput]useEffect - CDM'); // ComponentDidMount
-  // }, [userNumberFromInput]);
+  const cleanState = () => {
+    setShowBtn(true);
+    setResult('Играем заново!');
+  };
+  // колбэк вызывается каждый раз как угадано число
+  useEffect(() => {
+    setRandomNumber(Math.floor(Math.random() * (max - min + 1)) + min);
+    console.log('[showBtn] - основной компон', showBtn, randomNumber);
+    const timer = setTimeout(() => cleanState(), 1000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [showBtn]); // запускается, когда showBtn становится false
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -37,6 +43,8 @@ export const FunctionalComponent = ({min, max}) => {
       }
 
       setShowBtn(false);
+      setCount(0);
+      setUserNumberFromInput('');
       return `Вы угадали, загаданное число ${userNumberFromInput}`;
     });
     console.log('input: ', userNumberFromInput, randomNumber, 'count: ', count);
