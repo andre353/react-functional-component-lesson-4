@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useMemo} from 'react';
 import style from './FunctionalComponent.module.css';
 import PropTypes from 'prop-types';
 import {Button} from './Button/Button';
@@ -7,29 +7,23 @@ export const FunctionalComponent = ({min, max}) => {
   const [userNumberFromInput, setUserNumberFromInput] = useState('');
   const [count, setCount] = useState(0);
   const [result, setResult] = useState('Результат');
-  const [randomNumber, setRandomNumber] = useState(0);
   const [showBtn, setShowBtn] = useState(true);
 
-  // const cleanState = () => {
-  //   setShowBtn(true);
-  //   setResult('Играем заново!');
-  // };
-  // колбэк вызывается каждый раз как угадано число
-  useEffect(() => {// Перерендера страницы нет
-    setRandomNumber(Math.floor(Math.random() * (max - min + 1)) + min);
-    console.log('[showBtn] - основной компон', showBtn, randomNumber);
-    // const timer = setTimeout(() => cleanState(), 1000);
-    // return () => {
-    //   clearTimeout(timer);
-    // };
+  // колбэк вызывается каждый раз, когда угадано число = showBtn стало false
+  // useMemo в отличии от useEffect возвращает значение через return
+  // useEffect использует return по-другому - вызывает callback перед демонтаж
+  const randomNumber = useMemo(() => { // Перерендера страницы нет
+    setShowBtn(true);
+    console.log('[showBtn] - основной компон', showBtn);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }, [showBtn]); // запускается, когда showBtn становится false
 
   // useEffect() НИЧЕГО НЕ ВОЗВРАЩАЕТ - НЕ ЗАПИСАТЬ В ПЕРЕМЕННУЮ
 
   // альтернатива cleanState - ПЕРЕРЕНДЕРА СТРАНИЦЫ НЕТ
-  useEffect(() => {
-    setShowBtn(true);
-  }, [randomNumber]); // в свою очередь измененное randnumber изменит showBtn
+  // useEffect(() => {
+  //   setShowBtn(true);
+  // }, [randomNumber]); // в свою очередь измененное randnumber изменит showBtn
 
   const handleSubmit = e => {
     e.preventDefault();
