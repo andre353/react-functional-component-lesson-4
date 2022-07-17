@@ -3,6 +3,7 @@ import style from './FuncComplex.module.css';
 import PropTypes from 'prop-types';
 
 export const FuncComplex = ({min, max}) => {
+  const rN = Math.floor(Math.random() * (max - min + 1)) + min;
   // комплексный state в виде объекта (отличается от атомарного state)
   // используется, когда 2 значения созависимы и меняются
   // при определенных событиях
@@ -10,13 +11,16 @@ export const FuncComplex = ({min, max}) => {
     userNumberFromInput: '',
     count: 0,
     result: 'Результат',
+    playMore: false,
+    randomNumber: rN,
   });
 
-  const [randomNumber] = useState(
-    Math.floor(Math.random() * (max - min + 1)) + min
-  );
+  console.log(state.userNumberFromInput, state.randomNumber,
+    state.count, state.playMore);
 
-  console.log(state.userNumberFromInput, randomNumber, state.count);
+  // const resetInput = () => {
+  //   setState((prevState) => ({...prevState, userNumberFromInput: ''}));
+  // };
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -28,27 +32,38 @@ export const FuncComplex = ({min, max}) => {
 
     setState((prevState) => {
       let result = '';
-      let count = prevState.count;
       if (!state.userNumberFromInput ||
         state.userNumberFromInput < min ||
         state.userNumberFromInput > max) {
         return {...prevState, result: `Введите число от ${min} до ${max}`};
       }
 
+      let count = prevState.count;
       count++;
-      if (state.userNumberFromInput > randomNumber) {
-        result = `${state.userNumberFromInput} больше загаданного числа`;
-      } else if (state.userNumberFromInput < randomNumber) {
-        result = `${state.userNumberFromInput} меньше загаданного числа`;
+
+      let playMore = prevState.playMore;
+      // взяли из state и не меняем
+      const randomNumber = prevState.randomNumber;
+
+      let userNumberFromInput = prevState.userNumberFromInput;
+
+      if (userNumberFromInput > randomNumber) {
+        result = `${userNumberFromInput} больше загаданного числа`;
+      } else if (userNumberFromInput < randomNumber) {
+        result = `${userNumberFromInput} меньше загаданного числа`;
       } else {
-        result = `Вы угадали, загаданное число ${state.userNumberFromInput}. 
+        result = `Вы угадали, загаданное число ${userNumberFromInput}. 
         Попыток ${count}`;
+        playMore = true;
       }
+      // resetInput();
+      userNumberFromInput = '';
 
       // state будет обновлятся при каждом клике Угадать
       // т.е. count++ стработает при одном клике только 1 раз
       // и обновится в state:
-      return {...prevState, count, result};
+      return {...prevState, count, result, playMore,
+        randomNumber, userNumberFromInput};
     });
   };
   // получаем новое значение и каждый раз его перезаписываем
@@ -56,24 +71,40 @@ export const FuncComplex = ({min, max}) => {
     setState({...state, userNumberFromInput: e.target.value});
   };
 
+  const handleClick = (e) => {
+    setState({...state,
+      userNumberFromInput: '',
+      count: 0,
+      result: 'Результат',
+      playMore: false,
+      randomNumber: rN, // меняем рандомное число при клике Сыграть еще
+    });
+  };
+
   return (
     <div className={style.game}>
       <p className={style.result}>{state.result}</p>
-      <form className={style.form} onSubmit={handleSubmit}>
-        <label className={style.label} htmlFor='user_number'>
-          Попыток {state.count}
-        </label>
-        <input
-          className={style.input}
-          type='number'
-          id='user_number'
-          value={state.userNumberFromInput}
-          onChange={handleChange}
-        />
-        <button
-          className={style.btn}
-          disabled={!state.userNumberFromInput && true}>Угадать</button>
-      </form>
+      {!state.playMore && (
+        <form className={style.form} onSubmit={handleSubmit}>
+          <label className={style.label} htmlFor='user_number'>
+            Попыток {state.count}
+          </label>
+          <input
+            className={style.input}
+            type='number'
+            id='user_number'
+            value={state.userNumberFromInput}
+            onChange={handleChange}
+          />
+          <button
+            className={style.btn}
+            disabled={!state.userNumberFromInput && true}>Угадать</button>
+        </form>
+      )}
+      {state.playMore && (
+        <button className={`${style.btn} ${style.btnMore}`}
+          onClick={handleClick}>Сыграть еще</button>
+      )}
     </div>
   );
 };

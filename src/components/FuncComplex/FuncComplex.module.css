@@ -41,3 +41,8 @@
   border-color: white;
   color: black;
 }
+
+.btnMore {
+  display: flex;
+  margin: 0 auto;
+}
