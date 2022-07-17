@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useLayoutEffect} from 'react';
 import style from './FunctionalComponent.module.css';
 import PropTypes from 'prop-types';
 import {Button} from './Button/Button';
@@ -8,6 +8,7 @@ export const FunctionalComponent = ({min, max}) => {
   const [count, setCount] = useState(0);
   const [result, setResult] = useState('Результат');
   const [showBtn, setShowBtn] = useState(true);
+  const [tempRandom, setTempRandom] = useState(0);
 
   // колбэк вызывается каждый раз, когда угадано число = showBtn стало false
   // useMemo в отличии от useEffect возвращает значение через return
@@ -18,16 +19,36 @@ export const FunctionalComponent = ({min, max}) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }, [showBtn]); // запускается, когда showBtn становится false
 
-  // useEffect() НИЧЕГО НЕ ВОЗВРАЩАЕТ - НЕ ЗАПИСАТЬ В ПЕРЕМЕННУЮ
-
-  // альтернатива cleanState - ПЕРЕРЕНДЕРА СТРАНИЦЫ НЕТ
+  // useEffect работает АСИНХРОННО:
+  // сначала выводится на экран 1 из handleSubmit в <p></p>
+  // затем Math.random() из useEffect в <p></p>
   // useEffect(() => {
-  //   setShowBtn(true);
-  // }, [randomNumber]); // в свою очередь измененное randnumber изменит showBtn
+  //   if (tempRandom >= 1) { // значение в <p></p> скачет от 1 до 0-0.99
+  //     setTempRandom(Math.random());
+  //   }
+  // }, [tempRandom]);
+
+  // useLayoutEffect and useEffect are only being executed 
+  // after a component did mount lifeycle
+
+  // используй СИНХРОННЫЙ useLayoutEffect, чтобы
+  // выводить на экран нужное значение - чтобы они не "скакали"
+  // НО ЭТО НАМНОГО БОЛЬШЕ ОТНИМАЕТ ПРОИЗВОДИТЕЛЬНОСТИ
+  // it gets triggered synchronously after all DOM mutation.
+  // You only want to use this hook when you need to do any
+  //  DOM changes directly.
+  // This hook is optimized, to allow the engineer to make changes
+  // to a DOM node directly before the browser has a chance to paint.
+  useLayoutEffect(() => {
+    if (tempRandom >= 1) { // т.е. 1 из handleSubmit не успеет отрисоваться
+      setTempRandom(Math.random());
+    }
+  }, [tempRandom]);
 
   const handleSubmit = e => {
     e.preventDefault();
-    setCount(count + 1);
+    setCount((prevCount) => prevCount + 1);
+    setTempRandom(1);
     setResult(() => {
       if (!userNumberFromInput ||
         userNumberFromInput < min ||
@@ -58,6 +79,7 @@ export const FunctionalComponent = ({min, max}) => {
   return (
     <div className={style.game}>
       <p className={style.result}>{result}</p>
+      <p className={style.result}>{tempRandom}</p>
       <form className={style.form} onSubmit={handleSubmit}>
         <label className={style.label} htmlFor='user_number'>
           Попыток {count}
