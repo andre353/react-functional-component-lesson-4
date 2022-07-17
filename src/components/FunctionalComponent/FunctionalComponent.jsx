@@ -13,7 +13,6 @@ export const FunctionalComponent = ({min, max}) => {
   // ограничения в виде массива зависимости нет =
   // колбек запускается каждый раз при rerender
   useEffect(() => {
-    console.log('useEffect - CDM'); // ComponentDidMount
     console.log('useEffect - CDU'); // ComponentDidUpdate
   });
 
@@ -24,9 +23,15 @@ export const FunctionalComponent = ({min, max}) => {
   // когда происходит rerender
   // снова проверяется массив зависимости
   // если изменений нет - callback НЕ ЗАПУСКАЕТСЯ.
+  // т.е. при пустом массиве колбек вызывается единожды
   useEffect(() => {
     console.log('[]useEffect - CDM'); // ComponentDidMount
   }, []);
+
+  // колбэк вызывается каждый раз при внесении нового значения в input
+  useEffect(() => {
+    console.log('[userNumberFromInput]useEffect - CDM'); // ComponentDidMount
+  }, [userNumberFromInput]);
 
   const handleSubmit = e => {
     e.preventDefault();
