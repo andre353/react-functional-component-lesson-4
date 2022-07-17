@@ -33,6 +33,16 @@ export const FunctionalComponent = ({min, max}) => {
     console.log('[userNumberFromInput]useEffect - CDM'); // ComponentDidMount
   }, [userNumberFromInput]);
 
+  // Аналог ComponentWillUnmount = перед удалением компонента
+  // колбэк после return будет вызван
+  // т.е. для этого нужно прописать return
+  useEffect(() => {
+    console.log('[]useEffect - CDM'); // ComponentDidMount
+    return () => {
+      console.log('ComponentWillUnmount'); // перед удалением компонента
+    };
+  }, []);
+
   const handleSubmit = e => {
     e.preventDefault();
     setCount(count + 1);
