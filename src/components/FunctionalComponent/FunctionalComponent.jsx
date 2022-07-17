@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import style from './FunctionalComponent.module.css';
 import PropTypes from 'prop-types';
+import {Button} from './Button/Button';
 
 export const FunctionalComponent = ({min, max}) => {
   const [userNumberFromInput, setUserNumberFromInput] = useState('');
@@ -10,38 +11,12 @@ export const FunctionalComponent = ({min, max}) => {
     Math.floor(Math.random() * (max - min + 1)) + min
   );
 
-  // ограничения в виде массива зависимости нет =
-  // колбек запускается каждый раз при rerender
-  useEffect(() => {
-    console.log('useEffect - CDU'); // ComponentDidUpdate
-  });
-
-  // useEffect запускается первый раз ПЕРЕД render,
-  // регистрирует массив зависимостей - он пуст
-  // далее вызывает колбэк функцию
-
-  // когда происходит rerender
-  // снова проверяется массив зависимости
-  // если изменений нет - callback НЕ ЗАПУСКАЕТСЯ.
-  // т.е. при пустом массиве колбек вызывается единожды
-  useEffect(() => {
-    console.log('[]useEffect - CDM'); // ComponentDidMount
-  }, []);
+  const [showBtn, setShowBtn] = useState(true);
 
   // колбэк вызывается каждый раз при внесении нового значения в input
-  useEffect(() => {
-    console.log('[userNumberFromInput]useEffect - CDM'); // ComponentDidMount
-  }, [userNumberFromInput]);
-
-  // Аналог ComponentWillUnmount = перед удалением компонента
-  // колбэк после return будет вызван
-  // т.е. для этого нужно прописать return
-  useEffect(() => {
-    console.log('[]useEffect - CDM'); // ComponentDidMount
-    return () => {
-      console.log('ComponentWillUnmount'); // перед удалением компонента
-    };
-  }, []);
+  // useEffect(() => {
+  //   console.log('[userNumberFromInput]useEffect - CDM'); // ComponentDidMount
+  // }, [userNumberFromInput]);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -61,8 +36,10 @@ export const FunctionalComponent = ({min, max}) => {
         return `${userNumberFromInput} меньше загаданного числа`;
       }
 
+      setShowBtn(false);
       return `Вы угадали, загаданное число ${userNumberFromInput}`;
     });
+    console.log('input: ', userNumberFromInput, randomNumber, 'count: ', count);
   };
   // 2) Получается в set... можно передать значение
   const handleChange = (e) => {
@@ -83,9 +60,9 @@ export const FunctionalComponent = ({min, max}) => {
           value={userNumberFromInput}
           onChange={handleChange}
         />
-        <button
-          className={style.btn}
-          disabled={!userNumberFromInput && true}>Угадать</button>
+        {showBtn && <Button
+          disabled={!userNumberFromInput && true}
+          text='Угадать'/>}
       </form>
     </div>
   );
