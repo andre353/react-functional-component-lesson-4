@@ -10,19 +10,24 @@ export const FunctionalComponent = ({min, max}) => {
   const [randomNumber, setRandomNumber] = useState(0);
   const [showBtn, setShowBtn] = useState(true);
 
-  const cleanState = () => {
-    setShowBtn(true);
-    setResult('Играем заново!');
-  };
+  // const cleanState = () => {
+  //   setShowBtn(true);
+  //   setResult('Играем заново!');
+  // };
   // колбэк вызывается каждый раз как угадано число
   useEffect(() => {
     setRandomNumber(Math.floor(Math.random() * (max - min + 1)) + min);
     console.log('[showBtn] - основной компон', showBtn, randomNumber);
-    const timer = setTimeout(() => cleanState(), 1000);
-    return () => {
-      clearTimeout(timer);
-    };
+    // const timer = setTimeout(() => cleanState(), 1000);
+    // return () => {
+    //   clearTimeout(timer);
+    // };
   }, [showBtn]); // запускается, когда showBtn становится false
+
+  // альтернатива cleanState
+  useEffect(() => {
+    setShowBtn(true);
+  }, [randomNumber]); // в свою очередь измененное randnumber изменит showBtn
 
   const handleSubmit = e => {
     e.preventDefault();
